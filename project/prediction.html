@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction - Pollen's Profiling</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/static.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="hero-bg">
+        <div class="container prediction-container">
+            <h2>Upload a Pollen Image</h2>
+            <form action="{{ url_for('prediction') }}" method="post" enctype="multipart/form-data" class="upload-form">
+                <input type="file" name="file" id="file-upload" required>
+                <label for="file-upload" class="custom-file-upload">Choose Image</label>
+                <input type="submit" value="Predict" class="btn main-btn">
+            </form>
+            {% if prediction %}
+                <div class="result-card">
+                    <h3>Prediction: <span class="highlight">{{ prediction.predicted_type }}</span></h3>
+                    <p>Confidence: <span class="highlight">{{ (prediction.confidence * 100) | round(2) }}%</span></p>
+                    <img src="{{ url_for('uploaded_file', filename=prediction.img_file) }}" class="result-img">
+                    <h4>All Class Probabilities:</h4>
+                    <ul class="prob-list">
+                        {% for c, conf in prediction.all_predictions.items() %}
+                            <li><span class="prob-class">{{ c }}</span>: <span class="prob-value">{{ (conf*100)|round(2) }}%</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% elif error %}
+                <p class="error-msg">{{ error }}</p>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="btn secondary-btn">Logout</a>
+        </div>
+    </div>
+</body>
+</html>
